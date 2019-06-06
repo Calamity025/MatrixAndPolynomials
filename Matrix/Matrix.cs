@@ -4,18 +4,15 @@ namespace Practice1
 {
     public class Matrix
     {
-        public int[,] MatrixValue { get; private set; }
+        private int[,] matrix;
 
-        public Matrix()
-        {
-            MatrixValue = new int[0,0];
-        }
+        public int[,] GetMatrix() => matrix;
 
         public Matrix(int[,] intMatrix)
         {
             if (intMatrix != null)
             {
-                MatrixValue = intMatrix;
+                matrix = intMatrix;
             }
             else
             {
@@ -27,7 +24,7 @@ namespace Practice1
         {
             if (matrix != null)
             {
-                MatrixValue = matrix.MatrixValue;
+                this.matrix = matrix.GetMatrix();
             }
             else
             {
@@ -38,7 +35,7 @@ namespace Practice1
         {
             if (x > 0 && y > 0)
             {
-                MatrixValue = new int[x, y];
+                matrix = new int[x, y];
             }
             else
             {
@@ -49,16 +46,36 @@ namespace Practice1
 
         public int this[int x, int y]
         {
-            get => MatrixValue[x, y];
-            set => MatrixValue[x, y] = value;
+            get
+            {
+                try
+                {
+                    return matrix[x, y];
+                }
+                catch(IndexOutOfRangeException ex)
+                {
+                    throw ex;
+                }
+            }
+            set
+            {
+                try
+                {
+                    matrix[x, y] = value;
+                }
+                catch(IndexOutOfRangeException ex)
+                {
+                    throw ex;
+                }
+            }
         }
 
         public static Matrix operator *(Matrix a, int n)
         {
             if (a != null)
             {
-                int xLength = a.MatrixValue.GetLength(0);
-                int yLength = a.MatrixValue.GetLength(1);
+                int xLength = a.matrix.GetLength(0);
+                int yLength = a.matrix.GetLength(1);
                 Matrix result = new Matrix(xLength, yLength);
                 for (int i = 0; i < xLength; i++)
                 {
@@ -80,11 +97,11 @@ namespace Practice1
         {
             if (a != null || b != null)
             {
-                if (a.MatrixValue.GetLength(0) == b.MatrixValue.GetLength(0)
-                    && a.MatrixValue.GetLength(1) == b.MatrixValue.GetLength(1))
+                if (a.matrix.GetLength(0) == b.matrix.GetLength(0)
+                    && a.matrix.GetLength(1) == b.matrix.GetLength(1))
                 {
-                    int xLength = a.MatrixValue.GetLength(0);
-                    int yLength = a.MatrixValue.GetLength(1);
+                    int xLength = a.matrix.GetLength(0);
+                    int yLength = a.matrix.GetLength(1);
                     Matrix sum = new Matrix(xLength, yLength);
                     for (int i = 0; i < xLength; i++)
                     {
@@ -123,10 +140,10 @@ namespace Practice1
         {
             if (a != null || b != null)
             {
-                int aXLength = a.MatrixValue.GetLength(0);
-                int aYLength = a.MatrixValue.GetLength(1);
-                int bXLength = b.MatrixValue.GetLength(0);
-                int bYLength = b.MatrixValue.GetLength(1);
+                int aXLength = a.matrix.GetLength(0);
+                int aYLength = a.matrix.GetLength(1);
+                int bXLength = b.matrix.GetLength(0);
+                int bYLength = b.matrix.GetLength(1);
 
                 if (aYLength == bXLength)
                 {
@@ -163,8 +180,8 @@ namespace Practice1
         {
             if (matrix != null)
             {
-                int x = matrix.MatrixValue.GetLength(0);
-                int y = matrix.MatrixValue.GetLength(1);
+                int x = matrix.matrix.GetLength(0);
+                int y = matrix.matrix.GetLength(1);
                 Matrix result = new Matrix(x, y);
 
                 for (int i = 0; i < x; i++)
@@ -183,13 +200,13 @@ namespace Practice1
             }
         }
 
-        public void PrintMatrix()
+        public override string ToString()
         {
             string matrixInString = "";
 
-            for (int i = 0; i < MatrixValue.GetLength(0); i++)
+            for (int i = 0; i < matrix.GetLength(0); i++)
             {
-                for (int j = 0; j < MatrixValue.GetLength(1); j++)
+                for (int j = 0; j < matrix.GetLength(1); j++)
                 {
                     matrixInString += this[i, j] + " ";
                 }
@@ -197,7 +214,7 @@ namespace Practice1
                 matrixInString += "\r\n";
             }
 
-            Console.WriteLine(matrixInString);
+            return matrixInString;
         }
 
         public override bool Equals(Object obj)
@@ -209,16 +226,16 @@ namespace Practice1
             else
             {
                 Matrix matrix = (Matrix) obj;
-                if (matrix.MatrixValue.GetLength(0) != MatrixValue.GetLength(0) 
-                    || matrix.MatrixValue.GetLength(1) != MatrixValue.GetLength(1))
+                if (matrix.matrix.GetLength(0) != this.matrix.GetLength(0) 
+                    || matrix.matrix.GetLength(1) != this.matrix.GetLength(1))
                 {
                     return false;
                 }
-                for (int i = 0; i < matrix.MatrixValue.GetLength(0); i++)
+                for (int i = 0; i < matrix.matrix.GetLength(0); i++)
                 {
-                    for (int j = 0; j < matrix.MatrixValue.GetLength(1); j++)
+                    for (int j = 0; j < matrix.matrix.GetLength(1); j++)
                     {
-                        if (matrix[i, j] != MatrixValue[i, j])
+                        if (matrix[i, j] != matrix[i, j])
                         {
                             return false;
                         }
@@ -229,9 +246,12 @@ namespace Practice1
             }
         }
 
-        public Matrix Copy()
-        {
-            return new Matrix(this);
-        }
+    }
+
+    public class NegativeOr0ArgumentExeption : ArgumentException
+    {
+        public NegativeOr0ArgumentExeption() : base() { }
+        public NegativeOr0ArgumentExeption(string message) : base(message) { }
+        public NegativeOr0ArgumentExeption(string message, Exception inner) : base(message, inner) { }
     }
 }

@@ -6,7 +6,7 @@ namespace Practice1
 {
     public class Polynomial
     {
-        public Dictionary<int, int> IntPolynomial { get; private set; }
+        private Dictionary<int, int> polynomial;
 
         public Polynomial(int[] powers, int[] coefficients)
         {
@@ -20,21 +20,19 @@ namespace Practice1
             }
             else
             {
-                IntPolynomial = new Dictionary<int, int>();
+                polynomial = new Dictionary<int, int>();
                 
                 for (int i = 0; i < powers.Length; i++)
                 {
                     try
                     {
-                        IntPolynomial.Add(powers[i], coefficients[i]);
+                        polynomial.Add(powers[i], coefficients[i]);
                     }
-                    catch (ArgumentException)
+                    catch (ArgumentException ex)
                     {
-                        Console.WriteLine($"An element with power {powers[i]} " +
+                        throw new ArgumentException($"An element with power {powers[i]} " +
                                           $"already exists. " +
-                                          $"Note that powers must be unique");
-
-                        throw;
+                                          $"Note that powers must be unique", ex);
                     }
                 }
             }
@@ -49,13 +47,13 @@ namespace Practice1
             }
             else
             {
-                IntPolynomial = polynomial.IntPolynomial;
+                this.polynomial = polynomial.GetPolynomial();
             }
         }
 
         public Polynomial()
         {
-            IntPolynomial = new Dictionary<int, int>();
+            polynomial = new Dictionary<int, int>();
         }
 
         public static Polynomial operator +(Polynomial polynomial, int n)
@@ -63,9 +61,9 @@ namespace Practice1
             if (polynomial != null)
             {
                 Polynomial result = new Polynomial();
-                foreach (var kvp in polynomial.IntPolynomial)
+                foreach (var kvp in polynomial.GetPolynomial())
                 {
-                    result.IntPolynomial.Add(kvp.Key, kvp.Value + n);
+                    result.polynomial.Add(kvp.Key, kvp.Value + n);
                 }
 
                 return result;
@@ -86,9 +84,9 @@ namespace Practice1
             if (polynomial != null)
             {
                 Polynomial result = new Polynomial();
-                foreach (var kvp in polynomial.IntPolynomial)
+                foreach (var kvp in polynomial.polynomial)
                 {
-                    result.IntPolynomial.Add(kvp.Key, kvp.Value * n);
+                    result.polynomial.Add(kvp.Key, kvp.Value * n);
                 }
 
                 return result;
@@ -105,18 +103,18 @@ namespace Practice1
             {
                 Polynomial result = new Polynomial();
 
-                foreach (var kvp1 in polynomial1.IntPolynomial)
+                foreach (var kvp1 in polynomial1.polynomial)
                 {
-                    foreach (var kvp2 in polynomial2.IntPolynomial)
+                    foreach (var kvp2 in polynomial2.polynomial)
                     {
                         int powSum = kvp1.Key + kvp2.Key;
-                        if (result.IntPolynomial.TryGetValue(powSum, out int value))
+                        if (result.polynomial.TryGetValue(powSum, out int value))
                         {
-                            result.IntPolynomial[powSum] = value + (kvp1.Value * kvp2.Value);
+                            result.polynomial[powSum] = value + (kvp1.Value * kvp2.Value);
                         }
                         else
                         {
-                            result.IntPolynomial.Add(powSum, kvp1.Value * kvp2.Value);
+                            result.polynomial.Add(powSum, kvp1.Value * kvp2.Value);
                         }
                     }
                 }
@@ -136,9 +134,9 @@ namespace Practice1
                 return false;
             }
             Polynomial polynomial = (Polynomial) obj;
-            foreach (var kvp1 in IntPolynomial)
+            foreach (var kvp1 in this.polynomial)
             {
-                foreach (var kvp2 in polynomial.IntPolynomial)
+                foreach (var kvp2 in polynomial.polynomial)
                 {
                     if (kvp1.Key == kvp2.Key)
                     {
@@ -151,11 +149,6 @@ namespace Practice1
             }
 
             return true;
-        }
-
-        public Polynomial Copy()
-        {
-            return new Polynomial(this);
         }
     }
 }
